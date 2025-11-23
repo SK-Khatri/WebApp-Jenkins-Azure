@@ -28,7 +28,7 @@ pipeline {
       }
     }
 
-    stage('Deploy to Azure App service'){
+    stage('Deploy to Azure App Service'){
       steps{
         withCredentials([azureServicePrincipal(credentialsId: env.AZURE_CREDENTIAL_ID,
                                                clientIdVariable: 'AZURE_CLIENT_ID',

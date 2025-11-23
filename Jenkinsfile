@@ -1,0 +1,49 @@
+pipeline {
+  
+  agent any
+  
+  environment {
+    
+    // ID set for your Azure Service Principal credential
+    AZURE_CREDENTIAL_ID = 'AzureServicePrincipal'
+
+    // Define Azure Deployment targets
+    RESOURCE_GROUP = 'my-web-app-rg'
+    WEBAPP_NAME = 'my-jenkins-webapp-001'
+  }
+
+  stages {
+    
+    stage('Checkout'){
+      steps{
+        // SCM Details
+        git url: 'https://github.com/SK-Khatri/Jenkins-WebApp.git', branch: 'main'
+      }
+    }
+
+    stage('Build'){
+      steps{
+        // Example: Build a Java App using Maven
+        sh 'mvn clean package -DskipTests'
+      }
+    }
+
+    stage('Deploy to Azure App service'){
+      steps{
+        withCredentials([azureServicePrincipal(credentialsId: env.AZURE_CREDENTIAL_ID,
+                                               clientIdVariable: 'AZURE_CLIENT_ID',
+                                               clientSecretVariable: 'AZURE_CLIENT_SECRET',
+                                               tenantIdVariable: 'AZURE_TENANT_ID')]){
+          
+          sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID' 
+          
+          // Example deployment command for a Java WAR file 
+          sh 'az webapp deploy --resource-group $RESOURCE_GROUP --name $WEBAPP_NAME --src-path target/*.war' 
+          sh 'az logout'
+        }
+      }
+    }
+  }
+}
+
+  

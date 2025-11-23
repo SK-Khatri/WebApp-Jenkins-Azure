@@ -17,7 +17,7 @@ pipeline {
     stage('Checkout'){
       steps{
         // SCM Details
-        git url: 'https://github.com/SK-Khatri/Jenkins-WebApp.git', branch: 'main'
+        git url: 'https://github.com/SK-Khatri/WebApp-Jenkins-Azure.git', branch: 'main'
       }
     }
 
